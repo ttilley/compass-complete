@@ -1,0 +1,12 @@
+*.rbc
+*.sw?
+.DS_Store
+.idea
+/*.gem
+coverage
+nbproject
+pkg
+rdoc
+
+# Rubinius compiled bytecode
+*.rbc

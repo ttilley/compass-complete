@@ -1,0 +1,64 @@
+--- 
+vendor/chunky_png: 
+  branch: master
+  remote: braid/vendor/chunky-png
+  revision: f53ad776429a59e845e817dc06354c6390165b68
+  squashed: true
+  type: git
+  url: https://github.com/wvanbergen/chunky_png.git
+vendor/compass: 
+  branch: master
+  remote: braid/vendor/compass
+  revision: 4c289c9db08d5b7a52d8b20d25b3a55e1152f013
+  squashed: true
+  type: git
+  url: https://github.com/chriseppstein/compass.git
+vendor/compass-960-plugin: 
+  branch: master
+  remote: braid/vendor/compass-960-plugin
+  revision: 34159b9cf6b2c046562e7d407904ae9b7ccec2c7
+  squashed: true
+  type: git
+  url: https://github.com/chriseppstein/compass-960-plugin.git
+vendor/compass-susy-plugin: 
+  branch: master
+  remote: braid/vendor/compass-susy-plugin
+  revision: 9908c541e53d7a22953b457b33c5ff485e5362ae
+  squashed: true
+  type: git
+  url: https://github.com/ericam/compass-susy-plugin.git
+vendor/fancy-buttons: 
+  branch: master
+  remote: braid/vendor/fancy-buttons
+  revision: 7c5fb7e339e99ab3071b7aa478cd411d23aa39e7
+  squashed: true
+  type: git
+  url: https://github.com/imathis/fancy-buttons.git
+vendor/font-stack: 
+  branch: master
+  remote: braid/vendor/font-stack
+  revision: 7122e2c2c49e78535096890fa1490d118c139fce
+  squashed: true
+  type: git
+  url: https://github.com/lloydk/font-stack.git
+vendor/fssm: 
+  branch: master
+  remote: braid/vendor/fssm
+  revision: d8282d7291bd25c6ef92237191bb921b9accab36
+  squashed: true
+  type: git
+  url: git://github.com/ttilley/fssm.git
+vendor/rb-inotify: 
+  branch: master
+  remote: braid/vendor/rb-inotify
+  revision: dee7e22caa235e081065b7cf83ee8268c4ad8c29
+  squashed: true
+  type: git
+  url: https://github.com/nex3/rb-inotify.git
+vendor/sass: 
+  branch: master
+  remote: braid/vendor/sass
+  revision: 12b520cb680cbc2f52ad282d98638ab52170e917
+  squashed: true
+  type: git
+  url: git@github.com:ttilley/sass.git
