@@ -1,4 +1,4 @@
-package org.rubyforge.rawr;
+package compass_complete;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -15,12 +15,12 @@ import org.jruby.javasupport.JavaEmbedUtils;
 public class Main
 {
   public static void main(String[] args) throws Exception
-  {   
+  {
     RubyInstanceConfig config = new RubyInstanceConfig();
     config.setArgv(args);
     Ruby runtime = JavaEmbedUtils.initialize(new ArrayList(0), config);
     String mainRubyFile = "main";
-   
+
     ArrayList<String> config_data = new ArrayList<String>();
     try{
       java.io.InputStream ins = Main.class.getClassLoader().getResourceAsStream("run_configuration");
