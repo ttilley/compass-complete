@@ -21,12 +21,23 @@ class CompleteBuilder
     @version = File.read('VERSION').strip
 
     @pack200 = `which pack200 2> /dev/null`.strip
+    @advzip = `which advzip 2> /dev/null`.strip
 
     cleanup_paths
     unzip_files
     create_manifest
     create_complete_jar
+
+    advzip_jar unless @advzip.empty?
     repack_jar unless @pack200.empty?
+    advzip_jar unless @advzip.empty?
+  end
+
+  def advzip_jar
+    advz = [@advzip, '-z', '-4'].join(' ')
+
+    STDOUT.puts("=== Recompressing with:\n   #{advz}")
+    Kernel.system(advz)
   end
 
   def repack_jar
