@@ -124,6 +124,7 @@ end
 
 task :build => "rawr:jar"
 task :clean => "rawr:clean"
+task :jruby => "rawr:get:current-stable-jruby"
 
-task :default => [:clean, :build, :complete]
+task :default => [:clean, :jruby, :build, :complete]
 
