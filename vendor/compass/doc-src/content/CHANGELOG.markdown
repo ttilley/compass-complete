@@ -7,15 +7,27 @@ layout: default
 COMPASS CHANGELOG
 =================
 
-Upgrading compass is really easy.
+Upgrading compass is pretty easy.
 Don't let all these details [scare you...](/help/tutorials/upgrading/im-scared/)
 
 The Documentation for the [latest stable release](http://compass-style.org/docs/):
 
 The Documentation for the [latest preview release](http://beta.compass-style.org/)
 
-0.11.alpha.5 (future)
----------------------
+0.11.beta.1 (01/17/2011)
+------------------------
+* Add an option `--skip-overrides` to the sprite
+  subcommand. When provided, the default variables for overriding the sprite
+  behavior are not created. Instead, you would change the call to
+  `sprite-map()` to customize your sprite map.
+* Rename the `sprite-position` mixin in the new `sprite/base` module to
+  `sprite-background-position` in order avoid a naming conflict with the old
+  sprite module.
+
+0.11.beta.0 (01/09/2011)
+------------------------
+
+Compass v0.11 is now feature complete. Future changes to this release will be doc improvements, bug fixes, performance tuning, and addressing user feedback.
 
 * Added optional support for IE8 with $legacy-support-for-ie8 which defaults to true.
 * Updated the opacity and filter-gradient mixins to make IE's hacky DirectX filters
@@ -26,7 +38,16 @@ The Documentation for the [latest preview release](http://beta.compass-style.org
   The CLI options will still override the values set within the config file, but they might
   inform other values. For instance `compass compile -e production` will have the environment
   parameter preset to `:production` so that you can set other values in the project accordingly.
-
+* New infrastructure for supporting experimental css3 functions that are prefixed but have the same
+  syntax across all browsers. It is now possible to configure which browsers support which
+  experimental functions outside of the compass release cycle. For details, see the
+  [cross browser helpers](/reference/compass/helpers/cross-browser/).
+* [Blueprint] Added a new sass function called span($n) to the grid module which replaces
+  the now **deprecated span mixin**. If you are using this mixin, please replace it with:
+  `width: span($n)`.
+* [Blueprint] Blueprint no longer adds `!important` to the widths of `input`, `textarea`,
+  and `select` form fields, so compass no longer defaults to using `!important` in those cases.
+  If you were relying on this behavior, you may need to adjust your stylesheets accordingly.
 
 0.11.alpha.4 (12/08/2010)
 -------------------------
