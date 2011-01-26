@@ -16,7 +16,7 @@ vendor/compass:
 vendor/compass-960-plugin: 
   branch: master
   remote: braid/vendor/compass-960-plugin
-  revision: 34159b9cf6b2c046562e7d407904ae9b7ccec2c7
+  revision: 23e309ea5f5eb6301c54e069d01cf4ecf5773593
   squashed: true
   type: git
   url: https://github.com/chriseppstein/compass-960-plugin.git
