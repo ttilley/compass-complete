@@ -30,7 +30,7 @@ vendor/compass-susy-plugin:
 vendor/fancy-buttons: 
   branch: master
   remote: braid/vendor/fancy-buttons
-  revision: 7c5fb7e339e99ab3071b7aa478cd411d23aa39e7
+  revision: b2b28500efde08abea440970a6be9cc05a40f4dd
   squashed: true
   type: git
   url: https://github.com/imathis/fancy-buttons.git
