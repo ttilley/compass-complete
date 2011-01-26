@@ -75,16 +75,16 @@ module Sass
       # @raise [Sass::SyntaxError] if the function call raises an ArgumentError
       def _perform(environment)
         args = @args.map {|a| a.perform(environment)}
-        keywords = Sass::Util.map_hash(@keywords) {|k, v| [k, v.perform(environment)]}
         if fn = environment.function(@name)
+          keywords = Sass::Util.map_hash(@keywords) {|k, v| [k, v.perform(environment)]}
           return perform_sass_fn(fn, args, keywords)
         end
 
         ruby_name = @name.tr('-', '_')
-        args = construct_ruby_args(ruby_name, args, keywords)
+        args = construct_ruby_args(ruby_name, args, environment)
 
-        unless Sass::Util.has?(:public_instance_method, Functions, ruby_name) && ruby_name !~ /^__/
-          opts(Script::String.new("#{name}(#{args.join(', ')})"))
+        unless Functions.callable?(ruby_name)
+          opts(to_literal(args))
         else
           opts(Functions::EvaluationContext.new(environment.options).send(ruby_name, *args))
         end
@@ -93,13 +93,21 @@ module Sass
         raise Sass::SyntaxError.new("#{e.message} for `#{name}'")
       end
 
+      # This method is factored out from `_perform` so that compass can override
+      # it with a cross-browser implementation for functions that require vendor prefixes
+      # in the generated css.
+      def to_literal(args)
+        Script::String.new("#{name}(#{args.join(', ')})")
+      end
+
       private
 
-      def construct_ruby_args(name, args, keywords)
-        unless signature = Functions.signature(name.to_sym, args.size, keywords.size)
+      def construct_ruby_args(name, args, environment)
+        unless signature = Functions.signature(name.to_sym, args.size, @keywords.size)
           return args if keywords.empty?
           raise Sass::SyntaxError.new("Function #{name} doesn't support keyword arguments")
         end
+        keywords = Sass::Util.map_hash(@keywords) {|k, v| [k, v.perform(environment)]}
 
         # If the user passes more non-keyword args than the function expects,
         # but it does expect keyword args, Ruby's arg handling won't raise an error.

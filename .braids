@@ -58,7 +58,7 @@ vendor/rb-inotify:
 vendor/sass: 
   branch: master
   remote: braid/vendor/sass
-  revision: 12b520cb680cbc2f52ad282d98638ab52170e917
+  revision: 5b95ff13cd74f83ec224a3cb8032ec311713114f
   squashed: true
   type: git
   url: git@github.com:ttilley/sass.git

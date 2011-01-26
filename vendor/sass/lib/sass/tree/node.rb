@@ -184,29 +184,14 @@ module Sass
         Sass::Tree::Visitors::Convert.visit(self, options, :scss)
       end
 
-      # Names of options that are saved when the node is serialized and cached.
-      SAVED_OPTIONS = [:importer]
-
-      # Ensures that only {SAVED_OPTIONS} get saved.
-      def _around_dump
-        old_options = @options
-        old_children = @children
-        @options = {}
-        SAVED_OPTIONS.each do |opt|
-          @options[opt] = old_options[opt]
-        end
-        @options = Sass::Util.dump(@options)
-        @children = Sass::Util.dump(@children)
-        yield
-      ensure
-        @options = old_options
-        @children = old_children
-      end
-
-      # Ensures that only {SAVED_OPTIONS} get saved.
-      def _after_load
-        @options = Sass::Util.load(@options)
-        @children = Sass::Util.load(@children)
+      # Return a deep clone of this node.
+      # The child nodes are cloned, but options are not.
+      #
+      # @return [Node]
+      def deep_copy
+        node = dup
+        node.children = children.map {|c| c.deep_copy}
+        node
       end
 
       protected

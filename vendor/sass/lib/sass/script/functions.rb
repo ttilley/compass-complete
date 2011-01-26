@@ -90,8 +90,14 @@ module Sass::Script
   #
   # ## Other Color Functions
   #
-  # \{#adjust adjust($color, \[$red\], \[$green\], \[$blue\], \[$hue\], \[$saturation\], \[$lightness\], \[$alpha\]}
+  # \{#adjust adjust-color($color, \[$red\], \[$green\], \[$blue\], \[$hue\], \[$saturation\], \[$lightness\], \[$alpha\]}
   # : Increase or decrease any of the components of a color.
+  #
+  # \{#scale_color scale-color($color, \[$red\], \[$green\], \[$blue\], \[$hue\], \[$saturation\], \[$lightness\], \[$alpha\]}
+  # : Fluidly scale one or more components of a color.
+  #
+  # \{#change_color change-color($color, \[$red\], \[$green\], \[$blue\], \[$hue\], \[$saturation\], \[$lightness\], \[$alpha\]}
+  # : Changes one or more properties of a color.
   #
   # ## String Functions
   #
@@ -289,6 +295,8 @@ module Sass::Script
     # That means that all instance methods of {EvaluationContext}
     # are available to use in functions.
     class EvaluationContext
+      include Functions
+
       # The options hash for the {Sass::Engine} that is processing the function call
       #
       # @return [{Symbol => Object}]
@@ -297,10 +305,6 @@ module Sass::Script
       # @param options [{Symbol => Object}] See \{#options}
       def initialize(options)
         @options = options
-
-        # We need to include this individually in each instance
-        # because of an icky Ruby restriction
-        class << self; include Sass::Script::Functions; end
       end
 
       # Asserts that the type of a given SassScript value
@@ -324,8 +328,32 @@ module Sass::Script
       end
     end
 
-    instance_methods.each { |m| undef_method m unless m.to_s =~ /^__/ }
+    class << self
+      FUNCTIONS = Set.new
 
+      # Returns whether user function with a given name exists.
+      #
+      # @param function_name [String]
+      # @return [Boolean]
+      def callable?(function_name)
+        FUNCTIONS.include?(function_name)
+      end
+
+      private
+      def include(*args)
+        r = super
+        update_callable_functions
+        # We have to re-include ourselves into EvaluationContext to work around
+        # an icky Ruby restriction.
+        EvaluationContext.send :include, self
+        r
+      end
+
+      def update_callable_functions
+        FUNCTIONS.clear
+        public_instance_methods.each {|function_name| FUNCTIONS << function_name.to_s}
+      end
+    end
 
     # Creates a {Color} object from red, green, and blue values.
     #
@@ -729,9 +757,9 @@ module Sass::Script
     # and HSL properties (`$hue`, `$saturation`, `$value`) at the same time.
     #
     # @example
-    #   adjust(#102030, $blue: 5) => #102035
-    #   adjust(#102030, $red: -5, $blue: 5) => #0b2035
-    #   adjust(hsl(25, 100%, 80%), $lightness: -30%, $alpha: -0.4) => hsla(25, 100%, 50%, 0.6)
+    #   adjust-color(#102030, $blue: 5) => #102035
+    #   adjust-color(#102030, $red: -5, $blue: 5) => #0b2035
+    #   adjust-color(hsl(25, 100%, 80%), $lightness: -30%, $alpha: -0.4) => hsla(25, 100%, 50%, 0.6)
     # @param color [Color]
     # @param red [Number]
     # @param green [Number]
@@ -746,7 +774,7 @@ module Sass::Script
     #   if any keyword argument is not in the legal range,
     #   if an unexpected keyword argument is given,
     #   or if both HSL and RGB properties are given.
-    def adjust(color, kwargs)
+    def adjust_color(color, kwargs)
       assert_type color, :Color
       with = Sass::Util.map_hash({
           "red" => [-255..255, ""],
@@ -775,7 +803,7 @@ module Sass::Script
 
       color.with(with)
     end
-    declare :adjust, [:color], :var_kwargs => true
+    declare :adjust_color, [:color], :var_kwargs => true
 
     # Scales one or more properties of a color by a percentage value.
     # Unlike \{#adjust}, which changes a color's properties by fixed amounts,
@@ -783,13 +811,13 @@ module Sass::Script
     # That means that lightening an already-light color with \{#scale}
     # won't change the lightness much,
     # but lightening a dark color by the same amount will change it more dramatically.
-    # This has the benefit of making `scale($color, ...)` have a similar effect
+    # This has the benefit of making `scale-color($color, ...)` have a similar effect
     # regardless of what `$color` is.
     #
     # For example, the lightness of a color can be anywhere between 0 and 100.
-    # If `scale($color, $lightness: 40%)` is called, the resulting color's lightness
+    # If `scale-color($color, $lightness: 40%)` is called, the resulting color's lightness
     # will be 40% of the way between its original lightness and 100.
-    # If `scale($color, $lightness: -40%)` is called instead,
+    # If `scale-color($color, $lightness: -40%)` is called instead,
     # the lightness will be 40% of the way between the original and 0.
     #
     # This can change the red, green, blue, saturation, value, and alpha properties.
@@ -801,9 +829,9 @@ module Sass::Script
     # and HSL properties (`$saturation`, `$value`) at the same time.
     #
     # @example
-    #   scale(hsl(120, 70, 80), $lightness: 50%) => hsl(120, 70, 90)
-    #   scale(rgb(200, 150, 170), $green: -40%, $blue: 70%) => rgb(200, 90, 229)
-    #   scale(hsl(200, 70, 80), $saturation: -90%, $alpha: -30%) => hsla(200, 7, 80, 0.7)
+    #   scale-color(hsl(120, 70, 80), $lightness: 50%) => hsl(120, 70, 90)
+    #   scale-color(rgb(200, 150, 170), $green: -40%, $blue: 70%) => rgb(200, 90, 229)
+    #   scale-color(hsl(200, 70, 80), $saturation: -90%, $alpha: -30%) => hsla(200, 7, 80, 0.7)
     # @param color [Color]
     # @param red [Number]
     # @param green [Number]
@@ -816,7 +844,7 @@ module Sass::Script
     #   if any keyword argument is not a percentage between 0% and 100%,
     #   if an unexpected keyword argument is given,
     #   or if both HSL and RGB properties are given.
-    def scale(color, kwargs)
+    def scale_color(color, kwargs)
       assert_type color, :Color
       with = Sass::Util.map_hash({
           "red" => 255,
@@ -848,10 +876,10 @@ module Sass::Script
 
       color.with(with)
     end
-    declare :scale, [:color], :var_kwargs => true
+    declare :scale_color, [:color], :var_kwargs => true
 
-    # Sets one or more properties of a color.
-    # This can set the red, green, blue, hue, saturation, value, and alpha properties.
+    # Changes one or more properties of a color.
+    # This can change the red, green, blue, hue, saturation, value, and alpha properties.
     # The properties are specified as keyword arguments,
     # and replace the color's current value for that property.
     #
@@ -864,9 +892,9 @@ module Sass::Script
     # and HSL properties (`$hue`, `$saturation`, `$value`) at the same time.
     #
     # @example
-    #   set(#102030, $blue: 5) => #102005
-    #   set(#102030, $red: 120, $blue: 5) => #782005
-    #   set(hsl(25, 100%, 80%), $lightness: 40%, $alpha: 0.8) => hsla(25, 100%, 40%, 0.8)
+    #   change-color(#102030, $blue: 5) => #102005
+    #   change-color(#102030, $red: 120, $blue: 5) => #782005
+    #   change-color(hsl(25, 100%, 80%), $lightness: 40%, $alpha: 0.8) => hsla(25, 100%, 40%, 0.8)
     # @param color [Color]
     # @param red [Number]
     # @param green [Number]
@@ -881,7 +909,7 @@ module Sass::Script
     #   if any keyword argument is not in the legal range,
     #   if an unexpected keyword argument is given,
     #   or if both HSL and RGB properties are given.
-    def set(color, kwargs)
+    def change_color(color, kwargs)
       assert_type color, :Color
       with = Sass::Util.map_hash(%w[red green blue hue saturation lightness alpha]) do |name, max|
         next unless val = kwargs.delete(name)
@@ -896,7 +924,7 @@ module Sass::Script
 
       color.with(with)
     end
-    declare :set, [:color], :var_kwargs => true
+    declare :change_color, [:color], :var_kwargs => true
 
     # Mixes together two colors.
     # Specifically, takes the average of each of the RGB components,
@@ -1319,5 +1347,15 @@ module Sass::Script
       color.with(attr => Sass::Util.restrict(
           color.send(attr).send(op, amount.value), range))
     end
+
+    class << self
+      private
+      def method_added(name)
+        update_callable_functions
+        super
+      end
+    end
+
+    update_callable_functions # generate the initial set
   end
 end

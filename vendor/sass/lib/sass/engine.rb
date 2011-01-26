@@ -165,7 +165,8 @@ module Sass
       # Tracks the original filename of the top-level Sass file
       options[:original_filename] = options[:original_filename] || options[:filename]
 
-      options[:cache_store] ||= Sass::CacheStores::Filesystem.new(options[:cache_location])
+      options[:cache_store] ||= Sass::CacheStores::Chain.new(
+        Sass::CacheStores::Memory.new, Sass::CacheStores::Filesystem.new(options[:cache_location]))
       # Support both, because the docs said one and the other actually worked
       # for quite a long time.
       options[:line_comments] ||= options[:line_numbers]
@@ -334,7 +335,15 @@ module Sass
       end
 
       root.options = @options
-      @options[:cache_store].store(key, sha, root) if @options[:cache] && key && sha
+      if @options[:cache] && key && sha
+        begin
+          old_options = root.options
+          root.options = {:importer => root.options[:importer]}
+          @options[:cache_store].store(key, sha, root)
+        ensure
+          root.options = old_options
+        end
+      end
       root
     rescue SyntaxError => e
       e.modify_backtrace(:filename => @options[:filename], :line => @line)
