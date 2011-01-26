@@ -44,7 +44,7 @@ vendor/font-stack:
 vendor/fssm: 
   branch: master
   remote: braid/vendor/fssm
-  revision: 54819a3bef591a959146334b834505cf56e8d9cd
+  revision: 7a970370365d4c255b54eff72f42c79b08f3e785
   squashed: true
   type: git
   url: git://github.com/ttilley/fssm.git
