@@ -2,7 +2,7 @@
 vendor/chunky_png: 
   branch: master
   remote: braid/vendor/chunky-png
-  revision: f53ad776429a59e845e817dc06354c6390165b68
+  revision: 6c8a1b2c1d36ce13d3c6232086aa915deaa36821
   squashed: true
   type: git
   url: https://github.com/wvanbergen/chunky_png.git
