@@ -9,7 +9,7 @@ vendor/chunky_png:
 vendor/compass: 
   branch: master
   remote: braid/vendor/compass
-  revision: 13ecaa2da67b0cf6f317ff061930288e008ce4cf
+  revision: 303453d9a638184ba3dd2414d60a6272e4f545fd
   squashed: true
   type: git
   url: https://github.com/chriseppstein/compass.git
